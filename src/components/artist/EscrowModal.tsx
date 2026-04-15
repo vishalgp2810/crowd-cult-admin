@@ -85,7 +85,7 @@ export function EscrowModal({
                             <div className="bg-[#111] border border-purple-600/30 p-5 rounded-3xl flex items-center justify-between shadow-inner">
                                <div className="flex items-center gap-4">
                                   <span className="text-2xl">⚡</span>
-                                  <span className="text-xs font-black tracking-widest uppercase italic">GP Wallet</span>
+                                  <span className="text-xs font-black tracking-widest uppercase italic">Vault Wallet</span>
                                </div>
                                <span className="text-white text-[10px] font-black bg-white/5 px-2 py-1 rounded">Active</span>
                             </div>
@@ -111,7 +111,7 @@ export function EscrowModal({
                          <div className="bg-purple-600/5 p-8 rounded-[40px] border border-purple-600/10 space-y-4 relative overflow-hidden">
                             <div className="absolute top-[-20%] right-[-20%] text-6xl opacity-5 italic font-black">VAULT</div>
                             <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
-                               <span className="text-purple-500">✓</span> Protected by GigPay
+                               <span className="text-purple-500">✓</span> Protected by Crowd & Cult
                             </div>
                             <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest text-gray-500">
                                <span className="text-purple-500">✓</span> Instant Lock Enabled

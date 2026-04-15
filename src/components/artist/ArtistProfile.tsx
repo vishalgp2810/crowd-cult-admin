@@ -49,7 +49,7 @@ const MOCK_ARTISTS = [
 ];
 
 const REVIEWS_DATA = [
-  { id: 1, venue: "THE VAULT", city: "BERLIN", rating: 5, text: "Nyx is a true technician. The transition between tracks was seamless and the energy in the room was electric all night. Payout was instant via GigPay.", date: "Feb 2026" },
+  { id: 1, venue: "THE VAULT", city: "BERLIN", rating: 5, text: "Nyx is a true technician. The transition between tracks was seamless and the energy in the room was electric all night. Payout was instant via Crowd & Cult.", date: "Feb 2026" },
   { id: 2, venue: "ECHO CLUB", city: "CHICAGO", rating: 4, text: "Incredible keyboard work. The neo-soul vibes were exactly what our VIP lounge needed. Total professional.", date: "Jan 2026" },
   { id: 3, venue: "SKYLINE STAGE", city: "NYC", rating: 5, text: "Arrived early for soundcheck and stayed late to greet fans. The best response time in the network. Will book again next month.", date: "Dec 2025" }
 ];
@@ -114,7 +114,9 @@ export function ArtistProfile() {
           <span className="text-lg">←</span> <span className="hidden sm:inline">Back</span>
         </button>
         <div className="flex items-center gap-2 cursor-pointer mx-4 shrink-0" onClick={() => router.push("/")}>
-          <span className="text-lg md:text-xl font-black tracking-tighter italic uppercase underline decoration-purple-600 decoration-4">GIGPAY</span>
+          <span className="text-sm md:text-lg font-black tracking-tighter italic uppercase underline decoration-purple-600 decoration-4">
+            CROWD & CULT
+          </span>
         </div>
         <div className="flex items-center gap-3 md:gap-4 text-right shrink-0">
            <div className="bg-yellow-500/10 px-3 md:px-4 py-1 md:py-1.5 rounded-lg md:rounded-xl border border-yellow-500/20">

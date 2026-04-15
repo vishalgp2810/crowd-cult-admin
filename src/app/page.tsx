@@ -141,9 +141,11 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-[100] px-6 md:px-10 py-6 md:py-8 flex justify-between items-center bg-[#0A0A0A]/40 backdrop-blur-2xl border-b border-white/5">
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => router.push("/")}>
           <div className="bg-purple-600 p-2 rounded-xl group-hover:rotate-12 transition-transform">
-            <span className="text-white text-xl md:text-2xl font-black italic">GP</span>
+            <span className="text-white text-xl md:text-2xl font-black italic">C&C</span>
           </div>
-          <span className="text-2xl md:text-3xl font-black tracking-tighter italic">GIG<span className="text-purple-500">PAY</span></span>
+          <span className="text-xl md:text-2xl font-black tracking-tighter italic">
+            CROWD<span className="text-purple-500">&</span>CULT
+          </span>
         </div>
         
         <div className="hidden lg:flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">
@@ -272,7 +274,7 @@ export default function LandingPage() {
               <span className="text-purple-500 font-black text-4xl md:text-6xl italic opacity-20 mb-4 block">01</span>
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 md:mb-8 leading-[0.9]">AGENTIC <br className="hidden md:block" />MARKETPLACE</h2>
               <p className="text-base md:text-lg text-gray-500 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
-                Our secure marketplace identifies the best talent for your venue. From techno DJs in Berlin to indie bands in Austin, GigPay handles the logistics.
+                Our secure marketplace identifies the best talent for your venue. From techno DJs in Berlin to indie bands in Austin, Crowd & Cult handles the logistics.
               </p>
            </motion.div>
            <motion.div 
@@ -308,7 +310,9 @@ export default function LandingPage() {
       <footer className="py-20 px-6 md:px-10 border-t border-white/5 bg-[#050505]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-20">
            <div className="md:col-span-5 flex flex-col items-center md:items-start">
-              <span className="text-3xl md:text-5xl font-black italic tracking-tighter mb-8 block underline decoration-purple-600 decoration-4">GIGPAY.</span>
+              <span className="text-2xl md:text-4xl font-black italic tracking-tighter mb-8 block underline decoration-purple-600 decoration-4">
+                CROWD & CULT.
+              </span>
               <div className="flex gap-8 opacity-40 grayscale hover:grayscale-0 transition-all">
                  {["𝕏", "📸", "🔗", "🎧"].map(icon => (
                    <span key={icon} className="text-xl md:text-2xl cursor-pointer hover:scale-110 transition-transform">{icon}</span>

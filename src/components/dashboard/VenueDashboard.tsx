@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const MOCK_ARTISTS = [
   {
     id: "artist-001",
+    slug: "nyx-solaris",
     name: "Nyx Solaris",
     genre: "Electronic / Techno",
     city: "Berlin, DE",
@@ -26,6 +27,7 @@ const MOCK_ARTISTS = [
   },
   {
     id: "artist-002",
+    slug: "the-amber-riots",
     name: "The Amber Riots",
     genre: "Indie Rock",
     city: "Austin, TX",
@@ -40,6 +42,7 @@ const MOCK_ARTISTS = [
   },
   {
     id: "artist-003",
+    slug: "kai-okafor",
     name: "Kai Okafor",
     genre: "Afrobeats / R&B",
     city: "New York, NY",
@@ -54,6 +57,7 @@ const MOCK_ARTISTS = [
   },
   {
     id: "artist-004",
+    slug: "solene-voss",
     name: "Solène Voss",
     genre: "Jazz / Neo-Soul",
     city: "Chicago, IL",
@@ -100,9 +104,11 @@ export function VenueDashboard() {
             <div className="flex items-center gap-4 md:gap-10 flex-1">
                <div className="flex items-center gap-2 cursor-pointer shrink-0" onClick={() => router.push("/")}>
                   <div className="bg-purple-600 p-2 rounded-xl">
-                     <span className="text-white font-black italic text-lg md:text-xl">GP</span>
+                     <span className="text-white font-black italic text-sm md:text-lg">C&C</span>
                   </div>
-                  <span className="hidden sm:block text-2xl font-black italic tracking-tighter uppercase underline decoration-purple-600 decoration-4">GIGPAY</span>
+                  <span className="hidden sm:block text-lg md:text-xl font-black italic tracking-tighter uppercase underline decoration-purple-600 decoration-4">
+                    CROWD & CULT
+                  </span>
                </div>
 
                <div className="relative w-full max-w-xs md:max-w-lg group">
@@ -192,7 +198,7 @@ export function VenueDashboard() {
                    animate={{ opacity: 1, y: 0 }}
                    exit={{ opacity: 0, scale: 0.95 }}
                    whileHover={{ y: -8 }}
-                   onClick={() => router.push(`/artist-profile-page?id=${a.id}`)}
+                   onClick={() => router.push(`/artist/${a.slug}`)}
                    className="group bg-[#0D0D0D] border border-white/5 rounded-[40px] overflow-hidden hover:border-purple-600/30 transition-all cursor-pointer shadow-3xl"
                  >
                     <div className="relative aspect-[16/10] w-full overflow-hidden">

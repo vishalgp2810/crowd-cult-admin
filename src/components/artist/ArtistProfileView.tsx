@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, Button, Chip } from "@heroui/react";
 import { motion } from "framer-motion";
 
-export function ArtistProfileView() {
+export function ArtistProfileView({ slug }: { slug?: string }) {
   const router = useRouter();
 
   const profile = {
@@ -215,7 +215,7 @@ export function ArtistProfileView() {
       {/* ━━━ FOOTER ━━━ */}
       <footer className="px-6 py-32 border-t border-white/[0.04] text-center space-y-8">
         <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter opacity-5">NYX SOLARIS</h2>
-        <p className="text-[8px] font-black uppercase tracking-[0.6em] text-gray-800 italic">GigPay Talent Network · Verified Artist Profile</p>
+        <p className="text-[8px] font-black uppercase tracking-[0.6em] text-gray-800 italic">Crowd & Cult Talent Network · Verified Artist Profile</p>
       </footer>
 
       <style jsx global>{`

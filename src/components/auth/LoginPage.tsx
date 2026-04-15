@@ -5,9 +5,14 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loginThunk, registerThunk } from "@/features/auth/authThunks";
+import { selectAuthStatus } from "@/features/auth/authSelectors";
 
 export default function LoginPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const authStatus = useAppSelector(selectAuthStatus);
   const [role, setRole] = useState<"venue" | "artist">("venue");
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [loginStep, setLoginStep] = useState<"role" | "credentials">("role");
@@ -21,13 +26,36 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    
-    if (email && password) {
-      toast.success(authMode === 'login' ? 'Welcome back!' : 'Account created!');
-      setTimeout(() => router.push(role === "venue" ? "/dashboard/venue" : "/dashboard/artist"), 800);
-    } else {
+    if (!email || !password) {
       toast.error("Please fill in all fields");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      if (authMode === "login") {
+        await dispatch(loginThunk({ emailAddress: email, passwordHash: password })).unwrap();
+        toast.success("Welcome back!");
+      } else {
+        const roleCode = role === "venue" ? "VENUE" : "ARTIST";
+        await dispatch(
+          registerThunk({
+            fullName,
+            emailAddress: email,
+            password,
+            roleCode,
+            businessName: role === "venue" ? businessName : undefined,
+            stageName: role === "artist" ? businessName : undefined,
+          })
+        ).unwrap();
+        toast.success("Account created!");
+      }
+
+      setTimeout(() => router.push(role === "venue" ? "/dashboard/venue" : "/dashboard/artist"), 500);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error || "Authentication failed");
+      toast.error(message);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -48,9 +76,11 @@ export default function LoginPage() {
       >
         <div className="flex flex-col items-center mb-8 cursor-pointer group" onClick={() => router.push("/")}>
           <div className="bg-purple-600 p-3 rounded-2xl mb-4 group-hover:rotate-12 transition-transform shadow-2xl shadow-purple-600/20">
-            <span className="text-white text-3xl font-black italic">GP</span>
+            <span className="text-white text-2xl sm:text-3xl font-black italic">C&C</span>
           </div>
-          <h1 className="text-4xl font-black tracking-tighter italic">GIG<span className="text-yellow-500">PAY</span></h1>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tighter italic text-center leading-none">
+            CROWD<span className="text-yellow-500">&</span>CULT
+          </h1>
         </div>
 
         <motion.div layout className="bg-[#121212] border border-white/5 rounded-[32px] md:rounded-[40px] p-6 md:p-10 shadow-3xl overflow-hidden">
@@ -111,8 +141,8 @@ export default function LoginPage() {
                        <input required type="password" className="w-full bg-[#1A1A1A] border border-white/5 rounded-2xl px-5 py-4 text-sm font-bold shadow-inner" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </div>
                   </div>
-                  <button disabled={isLoading} type="submit" className={`w-full py-5 rounded-[20px] font-black uppercase tracking-[0.2em] text-xs ${role === 'venue' ? 'bg-yellow-500 text-black' : 'bg-purple-600 text-white'}`}>
-                    {isLoading ? "Communicating..." : authMode === 'login' ? 'Sign In' : 'Create Account'}
+                  <button disabled={isLoading || authStatus === "loading"} type="submit" className={`w-full py-5 rounded-[20px] font-black uppercase tracking-[0.2em] text-xs ${role === 'venue' ? 'bg-yellow-500 text-black' : 'bg-purple-600 text-white'}`}>
+                    {isLoading || authStatus === "loading" ? "Communicating..." : authMode === 'login' ? 'Sign In' : 'Create Account'}
                   </button>
                </motion.form>
              )}
