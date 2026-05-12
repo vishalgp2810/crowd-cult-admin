@@ -21,9 +21,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Crowd & Cult — Live Music Booking & Escrow Platform",
+  title: "Crowd & Cult — Admin",
   description:
-    "Crowd & Cult connects venue managers with artists through secure escrow-based bookings — discover talent, book instantly, pay safely.",
+    "Internal admin console to review and approve artist and venue profile submissions for Crowd & Cult.",
   icons: {
     icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
   },

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { store } from "@/store";
-import { fetchMeThunk } from "@/features/auth/authThunks";
+import { fetchMeThunk, refreshThunk } from "@/features/auth/authThunks";
 
 export interface ProvidersProps {
   children: ReactNode;
@@ -29,8 +29,14 @@ export function Providers({ children }: ProvidersProps) {
     document.documentElement.classList.add('dark');
     document.documentElement.style.colorScheme = 'dark';
 
-    // Restore session from HttpOnly cookie on app boot.
-    store.dispatch(fetchMeThunk());
+    // Restore session from HttpOnly cookie; then refresh once to mirror JWT into memory for Authorization header (uploads + CORS).
+    store
+      .dispatch(fetchMeThunk())
+      .unwrap()
+      .then(() => {
+        store.dispatch(refreshThunk());
+      })
+      .catch(() => {});
   }, []);
 
   return (

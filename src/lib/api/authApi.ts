@@ -15,6 +15,11 @@ export interface RegisterPayload {
 export interface LoginPayload {
   emailAddress: string;
   passwordHash: string;
+  /**
+   * Optional disambiguation for multi-role logins. Omit to let the server resolve
+   * the user role (e.g. PLATFORM_ADMIN in the admin app).
+   */
+  roleCode?: "VENUE" | "ARTIST" | "PLATFORM_ADMIN";
 }
 
 export interface AuthUser {

@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authApi, type LoginPayload, type RegisterPayload } from "@/lib/api/authApi";
+import { clearBearerToken, setBearerToken } from "@/lib/api/authToken";
 
 const toErrorMessage = (error: unknown) => {
   if (typeof error === "object" && error && "response" in error) {
@@ -14,7 +15,9 @@ export const registerThunk = createAsyncThunk(
   "auth/register",
   async (payload: RegisterPayload, { rejectWithValue }) => {
     try {
-      return await authApi.registerArtistOrVenue(payload);
+      const res = await authApi.registerArtistOrVenue(payload);
+      if (res.token) setBearerToken(res.token);
+      return res;
     } catch (error) {
       return rejectWithValue(toErrorMessage(error));
     }
@@ -25,7 +28,9 @@ export const loginThunk = createAsyncThunk(
   "auth/login",
   async (payload: LoginPayload, { rejectWithValue }) => {
     try {
-      return await authApi.login(payload);
+      const res = await authApi.login(payload);
+      if (res.token) setBearerToken(res.token);
+      return res;
     } catch (error) {
       return rejectWithValue(toErrorMessage(error));
     }
@@ -47,7 +52,9 @@ export const refreshThunk = createAsyncThunk(
   "auth/refresh",
   async (_, { rejectWithValue }) => {
     try {
-      return await authApi.refresh();
+      const res = await authApi.refresh();
+      if (res.token) setBearerToken(res.token);
+      return res;
     } catch (error) {
       return rejectWithValue(toErrorMessage(error));
     }
@@ -58,6 +65,7 @@ export const logoutThunk = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
+      clearBearerToken();
       return await authApi.logout();
     } catch (error) {
       return rejectWithValue(toErrorMessage(error));

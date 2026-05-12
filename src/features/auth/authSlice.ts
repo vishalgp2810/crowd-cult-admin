@@ -82,6 +82,15 @@ const authSlice = createSlice({
         state.status = "idle";
         state.error = null;
         state.initialized = true;
+      })
+      .addCase(logoutThunk.rejected, (state) => {
+        // Token is cleared in the thunk, but the API can still fail — always end the session in-memory.
+        state.user = null;
+        state.roleCode = null;
+        state.isAuthenticated = false;
+        state.status = "idle";
+        state.error = null;
+        state.initialized = true;
       });
   },
 });

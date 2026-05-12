@@ -1,9 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "@/features/auth/authSlice";
+import artistReducer from "@/features/artist/artistSlice";
+import venueReducer from "@/features/venue/venueSlice";
+import adminReducer from "@/features/admin/adminSlice";
+import adminUsersReducer from "@/features/adminUsers/adminUsersSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    artist: artistReducer,
+    venue: venueReducer,
+    admin: adminReducer,
+    adminUsers: adminUsersReducer,
   },
 });
 

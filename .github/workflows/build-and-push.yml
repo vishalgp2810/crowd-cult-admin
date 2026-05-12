@@ -1,0 +1,43 @@
+name: Admin Build and Push
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  IMAGE_NAME: crowd-cult-admin
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Auth to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure docker auth
+        run: gcloud auth configure-docker "${{ secrets.GCP_REGION }}-docker.pkg.dev" --quiet
+
+      - name: Build image
+        run: |
+          IMAGE_URI="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}"
+          docker build -t "$IMAGE_URI:sha-${GITHUB_SHA}" -t "$IMAGE_URI:latest" .
+
+      - name: Push image
+        run: |
+          IMAGE_URI="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}"
+          docker push "$IMAGE_URI:sha-${GITHUB_SHA}"
+          docker push "$IMAGE_URI:latest"

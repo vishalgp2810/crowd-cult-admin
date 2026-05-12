@@ -1,49 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "@heroui/react/styles";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core palette */
+  --cc-bg-base:       #07070B;
+  --cc-bg-surface:    #0D0D14;
+  --cc-bg-elevated:   #12121C;
+  --cc-bg-hover:      #1A1A28;
+
+  /* Sidebar */
+  --cc-sidebar-width: 260px;
+  --cc-sidebar-bg:    #09090F;
+  --cc-sidebar-border: rgba(255, 255, 255, 0.06);
+
+  /* Brand accent */
+  --cc-accent-violet: #7C3AED;
+  --cc-accent-fuchsia: #A855F7;
+  --cc-accent-glow:   rgba(124, 58, 237, 0.25);
+
+  /* Status colours */
+  --cc-amber:   #F59E0B;
+  --cc-emerald: #10B981;
+  --cc-red:     #EF4444;
+  --cc-cyan:    #06B6D4;
+
+  /* Typography */
+  --cc-text-primary:   #F0F0FF;
+  --cc-text-secondary: rgba(240, 240, 255, 0.55);
+  --cc-text-muted:     rgba(240, 240, 255, 0.30);
+
+  /* Borders */
+  --cc-border-subtle: rgba(255, 255, 255, 0.06);
+  --cc-border-dim:    rgba(255, 255, 255, 0.10);
+  --cc-border-base:   rgba(255, 255, 255, 0.14);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--cc-bg-base);
+  --color-foreground: var(--cc-text-primary);
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 html,
 body {
-  background: #0A0A0A;
-  color: #FFFFFF;
+  background: var(--cc-bg-base);
+  color: var(--cc-text-primary);
   margin: 0 !important;
   padding: 0 !important;
-  font-family: Arial, Helvetica, sans-serif;
-  overflow-x: visible;
+  font-family: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-button, 
+/* Thin scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.4) transparent;
+}
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.45);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.65); }
+
+button,
 [role="button"],
-.cursor-pointer {
-  cursor: pointer !important;
+.cursor-pointer { cursor: pointer !important; }
+
+/* Selection highlight */
+::selection {
+  background: rgba(124, 58, 237, 0.38);
+  color: #fff;
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Glass card utility */
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  /* Subtle gradient border shimmer */
+  .border-shimmer {
+    border: 1px solid;
+    border-image: linear-gradient(135deg, rgba(124,58,237,0.6), rgba(255,255,255,0.08), rgba(168,85,247,0.3)) 1;
   }
+
+  /* Glow utilities */
+  .glow-violet { box-shadow: 0 0 24px rgba(124,58,237,0.3), 0 0 8px rgba(124,58,237,0.15); }
+  .glow-emerald { box-shadow: 0 0 16px rgba(16,185,129,0.3); }
+  .glow-red    { box-shadow: 0 0 16px rgba(239,68,68,0.3); }
 }
