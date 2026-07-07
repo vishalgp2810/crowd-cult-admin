@@ -1,11 +1,11 @@
 import { apiClient, unwrapApiResponse } from "./client";
 
-export interface AddressAutocompleteItem {
+export type AddressAutocompleteItem = {
   description: string;
   placeId: string;
-}
+};
 
-export interface AddressDetailsPayload {
+export type AddressDetailsPayload = {
   placeId: string | null;
   formattedAddress: string | null;
   addressLine1: string | null;
@@ -16,7 +16,7 @@ export interface AddressDetailsPayload {
   postalCode: string | null;
   latitude: number | null;
   longitude: number | null;
-}
+};
 
 export const commonApi = {
   autocompleteAddress: async (query: string) => {

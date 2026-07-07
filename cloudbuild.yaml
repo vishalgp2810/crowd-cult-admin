@@ -1,0 +1,15 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - NEXT_PUBLIC_API_URL=https://api.crowdandcult.com
+      - --build-arg
+      - NEXT_PUBLIC_SITE_URL=https://admin.crowdandcult.com
+      - --build-arg
+      - NEXT_PUBLIC_PUBLIC_SITE_URL=https://crowdandcult.com
+      - -t
+      - asia-south1-docker.pkg.dev/crowdandcult-prod/crowd-cult-admin/crowd-cult-admin:latest
+      - .
+images:
+  - asia-south1-docker.pkg.dev/crowdandcult-prod/crowd-cult-admin/crowd-cult-admin:latest

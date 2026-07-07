@@ -9,4 +9,6 @@ export interface AuthState {
   status: AuthStatus;
   error: string | null;
   initialized: boolean;
+  /** Incremented on login / logout so late `/auth/me` responses cannot overwrite a newer session. */
+  authGeneration: number;
 }

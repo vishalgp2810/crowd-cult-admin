@@ -9,6 +9,7 @@ const initialState: AuthState = {
   status: "idle",
   error: null,
   initialized: false,
+  authGeneration: 0,
 };
 
 const getRoleCode = (user: AuthState["user"]) => user?.role?.roleCode || null;
@@ -28,6 +29,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(registerThunk.fulfilled, (state, action) => {
+        state.authGeneration += 1;
         state.status = "succeeded";
         state.user = action.payload.data;
         state.roleCode = getRoleCode(action.payload.data);
@@ -44,6 +46,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
+        state.authGeneration += 1;
         state.status = "succeeded";
         state.user = action.payload.data;
         state.roleCode = getRoleCode(action.payload.data);
@@ -59,13 +62,21 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchMeThunk.fulfilled, (state, action) => {
+        const { user, genBefore } = action.payload;
+        if (genBefore !== state.authGeneration) {
+          return;
+        }
         state.status = "succeeded";
-        state.user = action.payload;
-        state.roleCode = getRoleCode(action.payload);
+        state.user = user;
+        state.roleCode = getRoleCode(user);
         state.isAuthenticated = true;
         state.initialized = true;
       })
-      .addCase(fetchMeThunk.rejected, (state) => {
+      .addCase(fetchMeThunk.rejected, (state, action) => {
+        const p = action.payload as { genBefore?: number; message?: string } | undefined;
+        if (typeof p?.genBefore === "number" && p.genBefore !== state.authGeneration) {
+          return;
+        }
         state.status = "idle";
         state.user = null;
         state.roleCode = null;
@@ -75,7 +86,11 @@ const authSlice = createSlice({
       .addCase(refreshThunk.fulfilled, (state) => {
         state.initialized = true;
       })
+      .addCase(refreshThunk.rejected, (state) => {
+        state.initialized = true;
+      })
       .addCase(logoutThunk.fulfilled, (state) => {
+        state.authGeneration += 1;
         state.user = null;
         state.roleCode = null;
         state.isAuthenticated = false;
@@ -84,7 +99,7 @@ const authSlice = createSlice({
         state.initialized = true;
       })
       .addCase(logoutThunk.rejected, (state) => {
-        // Token is cleared in the thunk, but the API can still fail — always end the session in-memory.
+        state.authGeneration += 1;
         state.user = null;
         state.roleCode = null;
         state.isAuthenticated = false;

@@ -27,6 +27,10 @@ export interface VenueProfile {
   status: VenueStatus;
   rejectionReason: string | null;
   isVerified: boolean;
+  fullName?: string | null;
+  emailAddress?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   amenities: string[];
   techSpecs: string[];
   mediaAssets?: Array<{

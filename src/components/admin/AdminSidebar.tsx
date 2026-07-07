@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import { selectAuthUser } from "@/features/auth/authSelectors";
+import { CrowdCultBrandLogo } from "@/components/common/CrowdCultBrandLogo";
 import { ADMIN_NAV, getActiveNavKey } from "./adminNavConfig";
 import {
   IconExternal,
@@ -12,8 +13,10 @@ import {
   IconChart,
   IconShield,
   IconUsers,
+  IconUserClock,
   IconChevronRight,
   IconChevronLeft,
+  IconCalendar,
 } from "./AdminIcons";
 import { cn } from "./cn";
 
@@ -29,9 +32,12 @@ type AdminSidebarProps = {
 function NavIcon({ href, isActive }: { href: string; isActive: boolean }) {
   const cls = "w-4 h-4";
   if (href === "/admin/requests") return <IconInbox className={cls} />;
+  if (href === "/admin/signups") return <IconUserClock className={cls} />;
   if (href === "/admin/users") return <IconUsers className={cls} />;
   if (href === "/admin/analytics") return <IconChart className={cls} />;
   if (href === "/admin/moderation") return <IconShield className={cls} />;
+  if (href === "/admin/fees") return <IconChart className={cls} />;
+  if (href === "/admin/events") return <IconCalendar className={cls} />;
   return <IconInbox className={cls} />;
 }
 
@@ -49,6 +55,10 @@ export function AdminSidebar({
   const initials = email.slice(0, 2).toUpperCase();
   const pendingTotal =
     useAppSelector((s) => s.admin.pendingArtists.length + s.admin.pendingVenues.length) ?? 0;
+  const allUsersTotal =
+    useAppSelector(
+      (s) => s.admin.allArtistsCount + s.admin.allVenuesCount + s.admin.audienceUsersCount
+    ) ?? 0;
 
   const wrapCls =
     variant === "desktop"
@@ -71,36 +81,13 @@ export function AdminSidebar({
         )}
         style={{ background: "rgba(9,9,15,0.96)", backdropFilter: "blur(8px)" }}
       >
-        <Link
+        <CrowdCultBrandLogo
           href="/admin/requests"
           onClick={onNavigate}
-          className={cn("flex items-center group", collapsed ? "gap-0" : "gap-3")}
-        >
-          {/* Logo mark */}
-          <div
-            className="relative h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
-            style={{
-              background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 60%, #EC4899 100%)",
-              boxShadow: "0 0 20px rgba(124,58,237,0.45), 0 4px 12px rgba(0,0,0,0.5)",
-            }}
-          >
-            <span className="text-white text-base font-black italic select-none">C</span>
-            {/* Subtle inner highlight */}
-            <span
-              className="absolute inset-0 rounded-xl"
-              style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%)" }}
-            />
-          </div>
-
-          {!collapsed && <div className="min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/40 leading-none mb-0.5">
-              Crowd &amp; Cult
-            </p>
-            <p className="text-[15px] font-black text-white leading-none tracking-tight">
-              Admin Console
-            </p>
-          </div>}
-        </Link>
+          size="md"
+          collapsed={collapsed}
+          subtitle="Admin Console"
+        />
         {variant === "desktop" && (
           <button
             type="button"
@@ -114,26 +101,47 @@ export function AdminSidebar({
         )}
       </div>
 
-      {/* ── Pending summary chip ───────────────────────── */}
-      {pendingTotal > 0 && !collapsed && (
-        <div className="mx-3 mt-3">
-          <div
-            className="flex items-center gap-2 px-3 py-2 rounded-lg"
-            style={{
-              background: "linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05))",
-              border: "1px solid rgba(245,158,11,0.2)",
-            }}
-          >
-            <span
-              className="h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black text-black"
-              style={{ background: "#F59E0B" }}
+      {/* ── Pending summary chips ───────────────────────── */}
+      {!collapsed && (pendingTotal > 0 || allUsersTotal > 0) && (
+        <div className="mx-3 mt-3 space-y-2">
+          {pendingTotal > 0 && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg"
+              style={{
+                background: "linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05))",
+                border: "1px solid rgba(245,158,11,0.2)",
+              }}
             >
-              {pendingTotal > 99 ? "99+" : pendingTotal}
-            </span>
-            <span className="text-[10px] font-bold text-amber-300/80 tracking-wide">
-              pending review
-            </span>
-          </div>
+              <span
+                className="h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black text-black"
+                style={{ background: "#F59E0B" }}
+              >
+                {pendingTotal > 99 ? "99+" : pendingTotal}
+              </span>
+              <span className="text-[10px] font-bold text-amber-300/80 tracking-wide">
+                pending review
+              </span>
+            </div>
+          )}
+          {allUsersTotal > 0 && (
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg"
+              style={{
+                background: "linear-gradient(135deg, rgba(34,211,238,0.1), rgba(14,165,233,0.05))",
+                border: "1px solid rgba(34,211,238,0.2)",
+              }}
+            >
+              <span
+                className="h-5 w-5 rounded-md flex items-center justify-center text-[9px] font-black text-black"
+                style={{ background: "#22D3EE" }}
+              >
+                {allUsersTotal > 99 ? "99+" : allUsersTotal}
+              </span>
+              <span className="text-[10px] font-bold text-cyan-200/80 tracking-wide">
+                platform users
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -217,6 +225,14 @@ export function AdminSidebar({
                   style={{ background: "linear-gradient(135deg, #7C3AED, #A855F7)" }}
                 >
                   {pendingTotal > 99 ? "99+" : pendingTotal}
+                </span>
+              )}
+              {item.href === "/admin/signups" && allUsersTotal > 0 && !collapsed && (
+                <span
+                  className="relative z-10 shrink-0 h-5 min-w-[1.25rem] px-1.5 flex items-center justify-center rounded-full text-[9px] font-black tabular-nums text-black"
+                  style={{ background: "linear-gradient(135deg, #22D3EE, #0EA5E9)" }}
+                >
+                  {allUsersTotal > 99 ? "99+" : allUsersTotal}
                 </span>
               )}
             </Link>

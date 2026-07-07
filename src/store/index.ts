@@ -4,6 +4,7 @@ import artistReducer from "@/features/artist/artistSlice";
 import venueReducer from "@/features/venue/venueSlice";
 import adminReducer from "@/features/admin/adminSlice";
 import adminUsersReducer from "@/features/adminUsers/adminUsersSlice";
+import eventsReducer from "@/features/events/eventsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     venue: venueReducer,
     admin: adminReducer,
     adminUsers: adminUsersReducer,
+    events: eventsReducer,
   },
 });
 

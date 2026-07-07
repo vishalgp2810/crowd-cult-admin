@@ -13,6 +13,8 @@ import {
   fetchPendingVenuesThunk,
   rejectArtistThunk,
   rejectVenueThunk,
+  requestArtistChangesThunk,
+  requestVenueChangesThunk,
 } from "@/features/admin/adminThunks";
 import { clearAdminError } from "@/features/admin/adminSlice";
 import {
@@ -25,13 +27,17 @@ import {
   IconInbox,
   IconUsers,
 } from "@/components/admin/AdminIcons";
+import { EventReviewQueue } from "@/components/admin/EventReviewQueue";
+import { eventsApi } from "@/lib/api/eventsApi";
 
-type Tab = "artists" | "venues";
+type Tab = "artists" | "venues" | "events";
 type QueueView = "pending" | "approved";
 
 type RejectTarget =
   | { kind: "artist"; artistProfileId: number; label: string }
   | { kind: "venue"; venueId: number; label: string };
+
+type ChangesTarget = RejectTarget;
 
 function publicProfileUrl(type: "artist" | "venue", slug: string) {
   return `/${type}/${encodeURIComponent(slug)}`;
@@ -135,6 +141,43 @@ function RejectBtn({
   );
 }
 
+function RequestChangesBtn({
+  onPress,
+  disabled,
+}: {
+  onPress: () => void;
+  disabled: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onPress}
+      disabled={disabled}
+      className="group flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+      style={{
+        background: "rgba(245,158,11,0.1)",
+        border: "1px solid rgba(245,158,11,0.3)",
+        color: "#FCD34D",
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          const el = e.currentTarget;
+          el.style.background = "rgba(245,158,11,0.18)";
+          el.style.borderColor = "rgba(245,158,11,0.45)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget;
+        el.style.background = "rgba(245,158,11,0.1)";
+        el.style.borderColor = "rgba(245,158,11,0.3)";
+      }}
+    >
+      <IconRefresh className="w-3 h-3" />
+      Request changes
+    </button>
+  );
+}
+
 function ViewBtn({ href }: { href: string }) {
   return (
     <a
@@ -159,7 +202,7 @@ function ViewBtn({ href }: { href: string }) {
       }}
     >
       <IconLink className="w-3 h-3" />
-      Profile
+      View
     </a>
   );
 }
@@ -252,11 +295,25 @@ export default function AdminRequestsPage() {
   const [queueView, setQueueView] = useState<QueueView>("pending");
   const [rejectTarget, setRejectTarget] = useState<RejectTarget | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [changesTarget, setChangesTarget] = useState<ChangesTarget | null>(null);
+  const [changesMessage, setChangesMessage] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [eventCount, setEventCount] = useState<number | null>(null);
+
+  const loadEventCount = useCallback(async () => {
+    try {
+      const data = await eventsApi.listReviewQueue({ limit: 1 });
+      setEventCount(data.total ?? data.events?.length ?? 0);
+    } catch {
+      setEventCount(null);
+    }
+  }, []);
 
   const loadCurrentTab = useCallback(async () => {
     setIsRefreshing(true);
-    if (tab === "artists") {
+    if (tab === "events") {
+      await loadEventCount();
+    } else if (tab === "artists") {
       if (queueView === "pending") {
         await dispatch(fetchPendingArtistsThunk({ force: true }));
       } else {
@@ -270,7 +327,11 @@ export default function AdminRequestsPage() {
       }
     }
     setIsRefreshing(false);
-  }, [dispatch, queueView, tab]);
+  }, [dispatch, loadEventCount, queueView, tab]);
+
+  useEffect(() => {
+    void loadEventCount();
+  }, [loadEventCount]);
 
   useEffect(() => {
     if (tab === "artists") {
@@ -342,6 +403,34 @@ export default function AdminRequestsPage() {
       toast.success("Submission rejected");
       setRejectTarget(null);
       setRejectReason("");
+    }).catch(() => { });
+  };
+
+  const submitRequestChanges = () => {
+    if (!changesTarget) return;
+    const message = changesMessage.trim();
+    if (message.length < 3) {
+      toast.error("Please describe the requested changes (at least 3 characters).");
+      return;
+    }
+    const p =
+      changesTarget.kind === "artist"
+        ? dispatch(
+          requestArtistChangesThunk({
+            artistProfileId: changesTarget.artistProfileId,
+            message,
+          })
+        ).unwrap()
+        : dispatch(
+          requestVenueChangesThunk({
+            venueId: changesTarget.venueId,
+            message,
+          })
+        ).unwrap();
+    p.then(() => {
+      toast.success("Change request sent — email delivered to applicant");
+      setChangesTarget(null);
+      setChangesMessage("");
     }).catch(() => { });
   };
 
@@ -561,6 +650,37 @@ export default function AdminRequestsPage() {
           )}
         </button>
 
+        <button
+          type="button"
+          onClick={() => setTab("events")}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all duration-150"
+          style={
+            tab === "events"
+              ? {
+                  background:
+                    "linear-gradient(135deg, rgba(59,130,246,0.25), rgba(37,99,235,0.15))",
+                  border: "1px solid rgba(59,130,246,0.4)",
+                  color: "#BFDBFE",
+                  boxShadow: "0 0 16px rgba(59,130,246,0.15)",
+                }
+              : {
+                  background: "transparent",
+                  border: "1px solid transparent",
+                  color: "rgba(255,255,255,0.35)",
+                }
+          }
+        >
+          Events
+          {eventCount !== null && eventCount > 0 && (
+            <span
+              className="h-4 min-w-[1rem] px-1 flex items-center justify-center rounded-full text-[8px] font-black text-white"
+              style={{ background: tab === "events" ? "#3B82F6" : "rgba(255,255,255,0.12)" }}
+            >
+              {eventCount}
+            </span>
+          )}
+        </button>
+
         {/* Spacer */}
         <div className="flex-1" />
 
@@ -578,6 +698,18 @@ export default function AdminRequestsPage() {
       </div>
 
       {/* ── Content panel ─────────────────────────────────────────────── */}
+      {tab === "events" ? (
+        <div
+          className="rounded-2xl overflow-hidden p-5 sm:p-6"
+          style={{
+            background: "rgba(13,13,20,0.8)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.3)",
+          }}
+        >
+          <EventReviewQueue />
+        </div>
+      ) : (
       <AnimatePresence mode="wait">
         <motion.div
           key={tab}
@@ -677,6 +809,17 @@ export default function AdminRequestsPage() {
                       <p className="font-bold text-[14px] text-white truncate">
                         {a.stageName}
                       </p>
+                      <p className="text-[10px] text-purple-300/80 mt-0.5 truncate">
+                        {[a.performerTypeLabel, a.legalName].filter(Boolean).join(" · ") ||
+                          a.genre ||
+                          "Performer"}
+                      </p>
+                      {a.phoneNumber && (
+                        <p className="text-[10px] text-white/35 mt-0.5">{a.phoneNumber}</p>
+                      )}
+                      {(a.profileMeta as { govIdAssetId?: number })?.govIdAssetId ? (
+                        <p className="text-[10px] text-emerald-500/70 mt-0.5">Gov ID uploaded</p>
+                      ) : null}
                       <div className="flex items-center gap-1 mt-0.5">
                         <IconMapPin className="w-3 h-3 shrink-0" style={{ color: "rgba(255,255,255,0.25)" }} />
                         <p className="text-[11px] text-white/40 truncate">
@@ -685,35 +828,44 @@ export default function AdminRequestsPage() {
                       </div>
                     </div>
 
-                    <div className="hidden sm:block">
+                    <div className="hidden sm:block min-w-0">
+                      <p className="text-[11px] text-white/40 truncate">
+                        {[a.city, a.state].filter(Boolean).join(", ") || "—"}
+                      </p>
+                    </div>
+
+                    <div>
                       <StatusBadge status={a.status} />
                     </div>
 
-                    <div className="hidden sm:block">
+                    <div className="flex flex-wrap items-center justify-end gap-2 whitespace-nowrap">
                       <ViewBtn href={publicProfileUrl("artist", a.slug)} />
-                    </div>
-
-                    <div className="flex items-center gap-2 whitespace-nowrap">
-                      {queueView === "pending" ? (
-                        <>
-                          <ApproveBtn
-                            disabled={busy}
-                            onPress={() => handleApproveArtist(a.artistProfileId)}
-                          />
-                          <RejectBtn
-                            disabled={busy}
-                            onPress={() =>
-                              setRejectTarget({
-                                kind: "artist",
-                                artistProfileId: a.artistProfileId,
-                                label: a.stageName,
-                              })
-                            }
-                          />
-                        </>
-                      ) : (
-                        <ViewBtn href={publicProfileUrl("artist", a.slug)} />
+                      {queueView === "pending" && (
+                        <ApproveBtn
+                          disabled={busy}
+                          onPress={() => handleApproveArtist(a.artistProfileId)}
+                        />
                       )}
+                      <RejectBtn
+                        disabled={busy}
+                        onPress={() =>
+                          setRejectTarget({
+                            kind: "artist",
+                            artistProfileId: a.artistProfileId,
+                            label: a.stageName,
+                          })
+                        }
+                      />
+                      <RequestChangesBtn
+                        disabled={busy}
+                        onPress={() =>
+                          setChangesTarget({
+                            kind: "artist",
+                            artistProfileId: a.artistProfileId,
+                            label: a.stageName,
+                          })
+                        }
+                      />
                     </div>
                   </motion.div>
                 ))}
@@ -788,35 +940,44 @@ export default function AdminRequestsPage() {
                       </div>
                     </div>
 
-                    <div className="hidden sm:block">
+                    <div className="hidden sm:block min-w-0">
+                      <p className="text-[11px] text-white/40 truncate">
+                        {[v.city, v.state].filter(Boolean).join(", ") || "—"}
+                      </p>
+                    </div>
+
+                    <div>
                       <StatusBadge status={v.status} />
                     </div>
 
-                    <div className="hidden sm:block">
+                    <div className="flex flex-wrap items-center justify-end gap-2 whitespace-nowrap">
                       <ViewBtn href={publicProfileUrl("venue", v.slug)} />
-                    </div>
-
-                    <div className="flex items-center gap-2 whitespace-nowrap">
-                      {queueView === "pending" ? (
-                        <>
-                          <ApproveBtn
-                            disabled={busy}
-                            onPress={() => handleApproveVenue(v.venueId)}
-                          />
-                          <RejectBtn
-                            disabled={busy}
-                            onPress={() =>
-                              setRejectTarget({
-                                kind: "venue",
-                                venueId: v.venueId,
-                                label: v.businessName,
-                              })
-                            }
-                          />
-                        </>
-                      ) : (
-                        <ViewBtn href={publicProfileUrl("venue", v.slug)} />
+                      {queueView === "pending" && (
+                        <ApproveBtn
+                          disabled={busy}
+                          onPress={() => handleApproveVenue(v.venueId)}
+                        />
                       )}
+                      <RejectBtn
+                        disabled={busy}
+                        onPress={() =>
+                          setRejectTarget({
+                            kind: "venue",
+                            venueId: v.venueId,
+                            label: v.businessName,
+                          })
+                        }
+                      />
+                      <RequestChangesBtn
+                        disabled={busy}
+                        onPress={() =>
+                          setChangesTarget({
+                            kind: "venue",
+                            venueId: v.venueId,
+                            label: v.businessName,
+                          })
+                        }
+                      />
                     </div>
                   </motion.div>
                 ))}
@@ -824,6 +985,7 @@ export default function AdminRequestsPage() {
           )}
         </motion.div>
       </AnimatePresence>
+      )}
 
       {/* ── Reject modal ──────────────────────────────────────────────── */}
       <AnimatePresence>
@@ -954,6 +1116,128 @@ export default function AdminRequestsPage() {
                 >
                   <IconX className="w-3.5 h-3.5" />
                   Reject profile
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Request changes modal ─────────────────────────────────────── */}
+      <AnimatePresence>
+        {changesTarget && (
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
+            <motion.button
+              type="button"
+              aria-label="Close"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => {
+                setChangesTarget(null);
+                setChangesMessage("");
+              }}
+              className="absolute inset-0"
+              style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(8px)" }}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 4 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+              style={{
+                background: "#0E0E1A",
+                border: "1px solid rgba(255,255,255,0.1)",
+                boxShadow: "0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(245,158,11,0.1)",
+              }}
+            >
+              <div
+                className="flex items-center justify-between px-6 py-4 border-b"
+                style={{ borderColor: "rgba(255,255,255,0.08)" }}
+              >
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-amber-400/70 mb-0.5">
+                    Request changes
+                  </p>
+                  <h2 className="text-base font-black text-white leading-tight">
+                    {changesTarget.label}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setChangesTarget(null);
+                    setChangesMessage("");
+                  }}
+                  className="h-8 w-8 flex items-center justify-center rounded-xl text-white/40 hover:text-white hover:bg-white/[0.07] transition-all"
+                >
+                  <IconClose className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="px-6 py-5 space-y-4">
+                <p className="text-xs text-white/40 leading-relaxed">
+                  Describe what needs to be updated. The applicant will receive an email with
+                  your feedback and a link to their dashboard.
+                </p>
+                <textarea
+                  value={changesMessage}
+                  onChange={(e) => setChangesMessage(e.target.value)}
+                  rows={4}
+                  placeholder="e.g. Please add a higher-quality cover photo and complete your tech rider…"
+                  className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/25 outline-none resize-none transition-all duration-150"
+                  style={{
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.09)",
+                    lineHeight: "1.6",
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(245,158,11,0.5)";
+                    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(245,158,11,0.12)";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                />
+                <p className="text-[10px] text-white/20">
+                  {changesMessage.trim().length} / min 3 characters
+                </p>
+              </div>
+
+              <div
+                className="flex justify-end gap-3 px-6 py-4 border-t"
+                style={{
+                  borderColor: "rgba(255,255,255,0.07)",
+                  background: "rgba(255,255,255,0.015)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setChangesTarget(null);
+                    setChangesMessage("");
+                  }}
+                  className="px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-widest text-white/50 hover:text-white/80 transition-colors"
+                  style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={submitRequestChanges}
+                  disabled={busy}
+                  className="flex items-center gap-2 px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider text-white transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: "linear-gradient(135deg, #D97706, #B45309)",
+                    boxShadow: "0 0 20px rgba(245,158,11,0.3)",
+                  }}
+                >
+                  <IconRefresh className="w-3.5 h-3.5" />
+                  Send request
                 </button>
               </div>
             </motion.div>

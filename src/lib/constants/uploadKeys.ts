@@ -7,6 +7,9 @@ export const UPLOAD_KEYS = {
   VENUE_PROFILE_IMAGE: "venue-profile",
   VENUE_COVER_IMAGE: "venue-cover",
   VENUE_GALLERY: "venue-gallery",
+  EVENT_BANNER: "event-banner",
+  EVENT_GALLERY: "event-gallery",
+  EVENT_MEDIA: "event-media",
 } as const;
 
 export type UploadKeyValue = (typeof UPLOAD_KEYS)[keyof typeof UPLOAD_KEYS];

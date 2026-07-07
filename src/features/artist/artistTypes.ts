@@ -23,6 +23,13 @@ export interface ArtistHubProfile {
   userId: number;
   slug: string;
   stageName: string;
+  legalName?: string | null;
+  fullName?: string | null;
+  emailAddress?: string | null;
+  performerTypeCode?: string | null;
+  performerTypeLabel?: string | null;
+  phoneNumber?: string | null;
+  profileMeta?: Record<string, unknown> | null;
   genre: string | null;
   city: string | null;
   countryCode: string | null;
@@ -47,6 +54,22 @@ export interface ArtistHubProfile {
   equipment: string[];
   status: "DRAFT" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | "BANNED";
   rejectionReason: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   collections: ArtistCollection[];
   mediaAssets: ArtistMediaAsset[];
+}
+
+export interface ArtistReadinessSection {
+  complete: boolean;
+  missing: string[];
+  label: string;
+  tabId?: string;
+}
+
+export interface ArtistReadiness {
+  ready: boolean;
+  sections: Record<string, ArtistReadinessSection>;
+  incompleteSections: string[];
+  performerTypeCode: string;
 }

@@ -2,8 +2,19 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  fetchAllArtistsThunk,
+  fetchAllVenuesThunk,
+  fetchAudienceUsersThunk,
+  fetchDraftArtistsThunk,
+  fetchDraftVenuesThunk,
+  fetchPendingArtistsThunk,
+  fetchPendingVenuesThunk,
+} from "@/features/admin/adminThunks";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopHeader } from "./AdminTopHeader";
 
@@ -13,8 +24,23 @@ type AdminAppShellProps = {
 };
 
 export function AdminAppShell({ children, onSignOut }: AdminAppShellProps) {
+  const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const contentWide =
+    pathname?.startsWith("/admin/fees") || pathname?.startsWith("/admin/events");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    void dispatch(fetchPendingArtistsThunk());
+    void dispatch(fetchPendingVenuesThunk());
+    void dispatch(fetchDraftArtistsThunk());
+    void dispatch(fetchDraftVenuesThunk());
+    const countParams = { pageIndex: 0, pageSize: 1, status: "ALL" as const, force: true };
+    void dispatch(fetchAllArtistsThunk(countParams));
+    void dispatch(fetchAllVenuesThunk(countParams));
+    void dispatch(fetchAudienceUsersThunk({ pageIndex: 0, pageSize: 1, force: true }));
+  }, [dispatch]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("cc-admin-sidebar-collapsed");
@@ -114,7 +140,11 @@ export function AdminAppShell({ children, onSignOut }: AdminAppShellProps) {
           />
 
           {/* Page content */}
-          <div className="relative z-10 max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+          <div
+            className={`relative z-10 mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 ${
+              contentWide ? "max-w-none" : "max-w-6xl"
+            }`}
+          >
             {children}
           </div>
         </div>

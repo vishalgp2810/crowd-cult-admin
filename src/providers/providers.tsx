@@ -29,14 +29,15 @@ export function Providers({ children }: ProvidersProps) {
     document.documentElement.classList.add('dark');
     document.documentElement.style.colorScheme = 'dark';
 
-    // Restore session from HttpOnly cookie; then refresh once to mirror JWT into memory for Authorization header (uploads + CORS).
-    store
-      .dispatch(fetchMeThunk())
-      .unwrap()
-      .then(() => {
-        store.dispatch(refreshThunk());
-      })
-      .catch(() => {});
+    // Restore session: refresh cookie → memory bearer, then load profile (same pattern as crowd-cult-frontend).
+    void (async () => {
+      try {
+        await store.dispatch(refreshThunk()).unwrap();
+      } catch {
+        // Cookie may be absent or expired; fetchMe still runs to finalize initialized state.
+      }
+      await store.dispatch(fetchMeThunk());
+    })();
   }, []);
 
   return (

@@ -9,6 +9,8 @@ FROM base AS builder
 # Inlined into the browser bundle at build time (runtime ConfigMap alone is not enough).
 ARG NEXT_PUBLIC_API_URL=https://api.crowdandcult.com
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_PUBLIC_SITE_URL=https://crowdandcult.com
+ENV NEXT_PUBLIC_PUBLIC_SITE_URL=$NEXT_PUBLIC_PUBLIC_SITE_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

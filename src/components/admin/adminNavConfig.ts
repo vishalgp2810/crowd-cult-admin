@@ -10,14 +10,32 @@ export const ADMIN_NAV: AdminNavItem[] = [
   {
     href: "/admin/requests",
     label: "Review queue",
-    description: "Pending artist and venue profiles",
+    description: "Pending artist, venue, and event submissions",
     match: (p) => p === "/admin/requests" || p === "/admin",
+  },
+  {
+    href: "/admin/signups",
+    label: "All users",
+    description: "Artists, venues, and audience members on the platform",
+    match: (p) => p === "/admin/signups",
   },
   {
     href: "/admin/users",
     label: "Admin users",
     description: "Create and manage platform admin accounts",
     match: (p) => p === "/admin/users",
+  },
+  {
+    href: "/admin/fees",
+    label: "Platform fees",
+    description: "Escrow, payment processing, and platform service rates",
+    match: (p) => p === "/admin/fees",
+  },
+  {
+    href: "/admin/events",
+    label: "Hosted events",
+    description: "Create and publish events at approved venues",
+    match: (p) => p.startsWith("/admin/events"),
   },
 ];
 

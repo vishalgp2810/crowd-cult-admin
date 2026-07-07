@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authApi, type LoginPayload, type RegisterPayload } from "@/lib/api/authApi";
 import { clearBearerToken, setBearerToken } from "@/lib/api/authToken";
+import type { AuthState } from "./authTypes";
 
 const toErrorMessage = (error: unknown) => {
   if (typeof error === "object" && error && "response" in error) {
@@ -39,11 +40,13 @@ export const loginThunk = createAsyncThunk(
 
 export const fetchMeThunk = createAsyncThunk(
   "auth/me",
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
+    const genBefore = (getState() as { auth: AuthState }).auth.authGeneration;
     try {
-      return await authApi.me();
+      const user = await authApi.me();
+      return { user, genBefore };
     } catch (error) {
-      return rejectWithValue(toErrorMessage(error));
+      return rejectWithValue({ genBefore, message: toErrorMessage(error) });
     }
   }
 );

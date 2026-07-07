@@ -1,5 +1,5 @@
-import { apiClient, unwrapApiResponse } from "./client";
 import type { UploadKeyValue } from "@/lib/constants/uploadKeys";
+import { uploadMediaFile } from "./mediaUpload";
 
 export interface UploadResult {
   /**
@@ -13,15 +13,6 @@ export interface UploadResult {
 }
 
 export const mediaApi = {
-  uploadFile: async (file: File, uploadKey: UploadKeyValue) => {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("uploadKey", uploadKey);
-    const res = await apiClient.post("/media/upload", form);
-    return unwrapApiResponse<UploadResult>(res);
-  },
-  // Backward-compatible alias used in profile managers.
-  uploadSingle: async (file: File, uploadKey: UploadKeyValue) => {
-    return mediaApi.uploadFile(file, uploadKey);
-  },
+  uploadFile: uploadMediaFile,
+  uploadSingle: uploadMediaFile,
 };

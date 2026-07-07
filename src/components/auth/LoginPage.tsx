@@ -7,14 +7,18 @@ import { motion } from "framer-motion";
 import { Toaster, toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginThunk, logoutThunk } from "@/features/auth/authThunks";
-import { selectAuthStatus } from "@/features/auth/authSelectors";
+import { selectAuthRoleCode, selectAuthStatus, selectIsAuthenticated } from "@/features/auth/authSelectors";
 import { isPlatformAdminRole } from "@/lib/roles";
+import { CrowdCultBrandLogo } from "@/components/common/CrowdCultBrandLogo";
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector(selectAuthStatus);
+  const initialized = useAppSelector((s) => s.auth.initialized);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const roleCode = useAppSelector(selectAuthRoleCode);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +36,13 @@ export default function LoginPage() {
       router.replace("/auth");
     }
   }, [searchParams, router]);
+
+  useEffect(() => {
+    if (!initialized || !isAuthenticated) return;
+    if (isPlatformAdminRole(roleCode)) {
+      router.replace("/admin/requests");
+    }
+  }, [initialized, isAuthenticated, roleCode, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +69,7 @@ export default function LoginPage() {
         } catch {
           // ignore
         }
-        toast.error("This account is not a platform administrator. Use the public Crowd & Cult app for artist or venue sign-in.");
+        toast.error("This account is not a platform administrator. Use the public Crowd&Cult app for artist or venue sign-in.");
         return;
       }
 
@@ -87,12 +98,12 @@ export default function LoginPage() {
         className="w-full max-w-md z-10"
       >
         <div className="flex flex-col items-center mb-6">
-          <div className="bg-purple-600 p-2.5 rounded-xl mb-3 shadow-2xl shadow-purple-600/20">
-            <span className="text-white text-xl sm:text-2xl font-black italic">C&amp;C</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tighter italic text-center leading-none">
-            CROWD<span className="text-yellow-500">&</span>CULT
-          </h1>
+          <CrowdCultBrandLogo
+            size="sm"
+            showWordmark
+            wordmarkStyle="login"
+            className="flex-col items-center"
+          />
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 mt-2">Admin console</p>
         </div>
 

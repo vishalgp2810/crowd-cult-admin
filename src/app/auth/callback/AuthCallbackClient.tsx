@@ -21,7 +21,7 @@ export function AuthCallbackClient() {
         if (reason === "role_mismatch") {
           const accountRole = searchParams.get("accountRole") || "existing";
           setError(
-            `This email is already registered as ${accountRole}. Use the public Crowd & Cult app, or a different account for the admin console.`
+            `This email is already registered as ${accountRole}. Use the public Crowd&Cult app, or a different account for the admin console.`
           );
           return;
         }
@@ -29,9 +29,9 @@ export function AuthCallbackClient() {
         return;
       }
       try {
-        const user = await dispatch(fetchMeThunk()).unwrap();
+        const me = await dispatch(fetchMeThunk()).unwrap();
         await dispatch(refreshThunk()).unwrap();
-        const roleCode = String(user?.role?.roleCode || "").toUpperCase();
+        const roleCode = String(me.user?.role?.roleCode || "").toUpperCase();
 
         if (isPlatformAdminRole(roleCode)) {
           router.replace("/admin/requests");
@@ -44,7 +44,7 @@ export function AuthCallbackClient() {
             // still show message
           }
           setError(
-            "This admin app is for platform staff only. Sign in to artist or venue tools on the public Crowd & Cult site."
+            "This admin app is for platform staff only. Sign in to artist or venue tools on the public Crowd&Cult site."
           );
           return;
         }

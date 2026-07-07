@@ -1,9 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { isAdminPublicPath } from "@/lib/adminPublicRoutes";
 import { getBearerToken, setBearerToken, clearBearerToken } from "./authToken";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3031";
-
-let authRedirectInProgress = false;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -93,14 +92,19 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        const hadBearer = Boolean(getBearerToken());
         clearBearerToken();
 
-        // One hard redirect: avoid a storm of failed refresh replay calling this in a loop.
-        if (typeof window !== "undefined" && !authRedirectInProgress) {
+        // Do not kick guests or session bootstrap probes to /auth (matches crowd-cult-frontend).
+        if (typeof window !== "undefined") {
           const path = window.location.pathname;
-          if (path !== "/auth" && path !== "/") {
-            authRedirectInProgress = true;
-            window.location.assign("/auth");
+          const isSessionProbe =
+            originalRequest.url?.includes("/auth/me") ||
+            originalRequest.url?.includes("/auth/refresh");
+          const shouldRedirect = hadBearer && !isAdminPublicPath(path) && !isSessionProbe;
+
+          if (shouldRedirect) {
+            window.location.href = "/auth";
           }
         }
         return Promise.reject(refreshError);

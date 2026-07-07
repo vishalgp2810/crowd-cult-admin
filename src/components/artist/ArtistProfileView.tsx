@@ -3,13 +3,14 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, Button, Chip } from "@heroui/react";
+import { Avatar, Button } from "@heroui/react";
 import { motion } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { BrandFooter } from "@/components/common/BrandFooter";
 import { toast, Toaster } from "sonner";
 import { fetchVenueProfileThunk } from "@/features/venue/venueThunks";
 import { fetchArtistBySlugThunk } from "@/features/artist/artistThunks";
+import { formatCurrency } from "@/lib/constants/currency";
 
 const FALLBACK_COVER = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1600";
 const FALLBACK_AVATAR = "https://img.rocket.new/generatedImages/rocket_gen_img_1033f69f3-1768739059863.png";
@@ -270,7 +271,7 @@ export function ArtistProfileView({ slug }: { slug?: string }) {
               {/* Rate */}
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black italic text-yellow-400 tracking-tighter">
-                  ${p.hourlyRate}
+                  {formatCurrency(p.hourlyRate)}
                 </span>
                 <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">/hr</span>
               </div>
@@ -311,7 +312,7 @@ export function ArtistProfileView({ slug }: { slug?: string }) {
           <div className="hidden lg:block h-10 w-[1px] bg-white/[0.06]" />
           <div className="flex-1 min-w-[180px] flex justify-center">
             <Button className="bg-white text-black font-black italic uppercase tracking-wider text-[10px] px-8 rounded-2xl h-12 hover:bg-purple-600 hover:text-white transition-all duration-500 shadow-lg">
-              Request Portfolio
+              Follow
             </Button>
           </div>
         </motion.div>
@@ -500,7 +501,7 @@ export function ArtistProfileView({ slug }: { slug?: string }) {
               <div className="space-y-2">
                 <span className="text-[9px] font-black uppercase tracking-[0.5em] text-purple-400 italic">Settlement</span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black italic text-yellow-400 tracking-tighter">${p.hourlyRate}</span>
+                  <span className="text-5xl font-black italic text-yellow-400 tracking-tighter">{formatCurrency(p.hourlyRate)}</span>
                   <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">/hour</span>
                 </div>
               </div>
@@ -512,7 +513,7 @@ export function ArtistProfileView({ slug }: { slug?: string }) {
                 Initiate Booking
               </Button>
               <p className="text-[8px] text-gray-600 text-center uppercase tracking-[0.25em] italic font-black">
-                Escrow Protected · Crowd & Cult Verified
+                Escrow Protected · Crowd&Cult Verified
               </p>
 
               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/[0.05]">
@@ -534,32 +535,31 @@ export function ArtistProfileView({ slug }: { slug?: string }) {
             {(p.equipment.length > 0 || p.skills.length > 0) && (
               <motion.div
                 {...fadeUp(0.3)}
-                className="bg-gradient-to-b from-white/[0.04] to-transparent border border-white/[0.07] rounded-[28px] p-7 space-y-7"
+                className="bg-gradient-to-b from-white/[0.04] to-transparent border border-white/[0.07] rounded-[28px] p-7 space-y-7 min-w-0 overflow-hidden"
               >
                 {p.equipment.length > 0 && (
                   <div className="space-y-4">
                     <span className="text-[9px] font-black uppercase tracking-[0.5em] text-purple-400 italic block">Hardware Rider</span>
                     {p.equipment.map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 group">
-                        <div className="w-1.5 h-1.5 rounded-full bg-purple-600 group-hover:scale-150 group-hover:shadow-[0_0_6px_rgba(147,51,234,0.8)] transition-all" />
-                        <span className="text-[11px] font-bold tracking-tight text-white/70 group-hover:text-white transition-colors uppercase">{item}</span>
+                      <div key={i} className="flex items-start gap-3 group min-w-0">
+                        <div className="w-1.5 h-1.5 mt-1.5 shrink-0 rounded-full bg-purple-600 group-hover:scale-150 group-hover:shadow-[0_0_6px_rgba(147,51,234,0.8)] transition-all" />
+                        <span className="min-w-0 text-[11px] font-bold tracking-tight text-white/70 group-hover:text-white transition-colors uppercase break-words">{item}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {p.skills.length > 0 && (
-                  <div className="space-y-4 pt-4 border-t border-white/[0.05]">
+                  <div className="space-y-4 pt-4 border-t border-white/[0.05] min-w-0">
                     <span className="text-[9px] font-black uppercase tracking-[0.5em] text-gray-600 italic block">Core Competencies</span>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 min-w-0">
                       {p.skills.map((skill, i) => (
-                        <Chip
+                        <span
                           key={i}
-                          variant="flat"
-                          className="bg-white/5 border border-white/5 text-[9px] font-black italic uppercase tracking-widest h-7"
+                          className="inline-block max-w-full px-3 py-1.5 bg-white/5 border border-white/5 rounded-full text-[9px] font-black italic uppercase tracking-widest whitespace-normal break-words leading-snug"
                         >
                           {skill}
-                        </Chip>
+                        </span>
                       ))}
                     </div>
                   </div>

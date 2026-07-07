@@ -21,11 +21,29 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Crowd & Cult — Admin",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  ),
+  title: {
+    default: "Crowd&Cult — Admin",
+    template: "%s | Crowd&Cult Admin",
+  },
   description:
-    "Internal admin console to review and approve artist and venue profile submissions for Crowd & Cult.",
+    "Internal admin console to review and approve artist and venue profile submissions for Crowd&Cult.",
+  applicationName: "Crowd&Cult Admin",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Crowd&Cult Admin",
+  },
   icons: {
-    icon: [{ url: "/favicon.ico", type: "image/x-icon" }],
+    icon: [
+      { url: "/SHORT-LOGO.png", sizes: "192x192", type: "image/png" },
+      { url: "/LOGO.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/SHORT-LOGO.png",
+    apple: [{ url: "/SHORT-LOGO.png", sizes: "180x180", type: "image/png" }],
   },
 };
 

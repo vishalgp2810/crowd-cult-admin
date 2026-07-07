@@ -7,6 +7,7 @@ import { Avatar, Button, Chip } from "@heroui/react";
 import { motion } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { BrandFooter } from "@/components/common/BrandFooter";
+import { CrowdCultBrandLogo } from "@/components/common/CrowdCultBrandLogo";
 import { toast, Toaster } from "sonner";
 import { fetchVenueBySlugThunk } from "@/features/venue/venueThunks";
 
@@ -118,9 +119,14 @@ export function VenueProfileView({ slug }: { slug?: string }) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
         <button
           onClick={() => router.push("/")}
-          className="relative z-10 w-14 h-11 bg-white/10 backdrop-blur-2xl border border-white/10 rounded-2xl flex items-center justify-center hover:bg-white hover:border-white transition-all duration-500 group"
+          aria-label="Crowd&Cult home"
+          className="relative z-10 flex items-center transition-transform duration-500 hover:scale-[1.03]"
         >
-          <span className="font-black italic text-lg text-yellow-500 group-hover:text-black transition-colors tracking-tighter">C&C</span>
+          <CrowdCultBrandLogo
+            size="lg"
+            showWordmark={false}
+            className="pointer-events-none"
+          />
         </button>
         <div className="relative z-10 flex items-center gap-3">
           <Button
