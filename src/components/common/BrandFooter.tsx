@@ -75,7 +75,13 @@ export function BrandFooter({ className = "" }: { className?: string }) {
                   </svg>
                 </a>
                 {/* Instagram */}
-                <a href="#" className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:border-purple-500/40 transition-all group">
+                <a
+                  href="https://www.instagram.com/crowdandcult?igsh=MWF3c3BwYXhwM210OA=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Crowd&Cult on Instagram"
+                  className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:border-purple-500/40 transition-all group"
+                >
                   <svg className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -83,7 +89,13 @@ export function BrandFooter({ className = "" }: { className?: string }) {
                   </svg>
                 </a>
                 {/* Facebook */}
-                <a href="#" className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:border-blue-500/40 transition-all group">
+                <a
+                  href="https://www.facebook.com/share/18sA8Gp5Zr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Crowd&Cult on Facebook"
+                  className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 hover:border-blue-500/40 transition-all group"
+                >
                   <svg className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
                   </svg>
