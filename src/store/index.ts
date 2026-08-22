@@ -5,6 +5,7 @@ import venueReducer from "@/features/venue/venueSlice";
 import adminReducer from "@/features/admin/adminSlice";
 import adminUsersReducer from "@/features/adminUsers/adminUsersSlice";
 import eventsReducer from "@/features/events/eventsSlice";
+import menuReducer from "@/features/menu/menuSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     admin: adminReducer,
     adminUsers: adminUsersReducer,
     events: eventsReducer,
+    menu: menuReducer,
   },
 });
 

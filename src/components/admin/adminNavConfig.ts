@@ -37,6 +37,12 @@ export const ADMIN_NAV: AdminNavItem[] = [
     description: "Create and publish events at approved venues",
     match: (p) => p.startsWith("/admin/events"),
   },
+  {
+    href: "/admin/menu",
+    label: "Venue menus",
+    description: "Support view for venue menu catalogs",
+    match: (p) => p.startsWith("/admin/menu"),
+  },
 ];
 
 export function getActiveNavKey(pathname: string): string | null {
