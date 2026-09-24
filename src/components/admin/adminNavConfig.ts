@@ -38,10 +38,16 @@ export const ADMIN_NAV: AdminNavItem[] = [
     match: (p) => p.startsWith("/admin/events"),
   },
   {
+    href: "/admin/menu-library",
+    label: "Menu image library",
+    description: "Crowd&Cult dish photos venues can use instead of uploading their own",
+    match: (p) => p.startsWith("/admin/menu-library"),
+  },
+  {
     href: "/admin/menu",
     label: "Venue menus",
     description: "Support view for venue menu catalogs",
-    match: (p) => p.startsWith("/admin/menu"),
+    match: (p) => p === "/admin/menu" || (p.startsWith("/admin/menu/") && !p.startsWith("/admin/menu-library")),
   },
 ];
 

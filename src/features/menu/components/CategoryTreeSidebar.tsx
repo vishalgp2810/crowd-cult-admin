@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { MenuCategory, menuApi } from "@/lib/api/menuApi";
-import { Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Tooltip } from "@heroui/react";
 import { toast } from "sonner";
 
 interface Props {
@@ -18,7 +17,9 @@ export const CategoryTreeSidebar: React.FC<Props> = ({
   onSelectCategory,
   onRefresh,
 }) => {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const [newCatName, setNewCatName] = useState("");
   const [newCatParentId, setNewCatParentId] = useState<number | null>(null);
   const [newCatDescription, setNewCatDescription] = useState("");
@@ -82,16 +83,16 @@ export const CategoryTreeSidebar: React.FC<Props> = ({
     <div className="w-full lg:w-72 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col gap-4 shadow-xl">
       <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h2 className="text-lg font-bold text-white tracking-wide">Menu Categories</h2>
-        <Button
-          size="sm"
-          className="bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg"
+        <button
+          type="button"
+          className="bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-lg text-sm px-3 py-1.5"
           onClick={() => {
             setNewCatParentId(null);
             onOpen();
           }}
         >
           + Add
-        </Button>
+        </button>
       </div>
 
       {/* Category List */}
@@ -205,77 +206,79 @@ export const CategoryTreeSidebar: React.FC<Props> = ({
         ))}
       </div>
 
-      {/* Create Category Modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="dark bg-neutral-900 text-white border border-neutral-800">
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="text-lg font-bold border-b border-neutral-800">
-                {newCatParentId ? "Add Subcategory" : "Add Custom Category"}
-              </ModalHeader>
-              <ModalBody className="flex flex-col gap-4 py-4">
-                <Input
-                  label="Category Name"
-                  placeholder="e.g. Artisanal Pizzas, Cocktails, Chef Specials"
-                  value={newCatName}
-                  onChange={(e) => setNewCatName(e.target.value)}
-                  variant="bordered"
-                />
-                <Input
-                  label="Description (Optional)"
-                  placeholder="Brief description of items in this category"
-                  value={newCatDescription}
-                  onChange={(e) => setNewCatDescription(e.target.value)}
-                  variant="bordered"
-                />
-              </ModalBody>
-              <ModalFooter className="border-t border-neutral-800">
-                <Button variant="flat" onClick={onClose} className="text-neutral-400">
-                  Cancel
-                </Button>
-                <Button
-                  className="bg-amber-500 text-black font-semibold"
-                  isLoading={submitting}
-                  onClick={handleCreate}
-                >
-                  Save Category
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+          <div
+            className="w-full max-w-md rounded-xl border border-neutral-800 bg-neutral-900 text-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-lg font-bold border-b border-neutral-800 p-4">
+              {newCatParentId ? "Add Subcategory" : "Add Custom Category"}
+            </div>
+            <div className="flex flex-col gap-4 p-4">
+              <input
+                className="w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+                placeholder="e.g. Artisanal Pizzas, Cocktails, Chef Specials"
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+              />
+              <input
+                className="w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+                placeholder="Brief description of items in this category"
+                value={newCatDescription}
+                onChange={(e) => setNewCatDescription(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2 border-t border-neutral-800 p-4">
+              <button type="button" onClick={onClose} className="text-neutral-400 px-3 py-2">
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="bg-amber-500 text-black font-semibold rounded-lg px-3 py-2 disabled:opacity-50"
+                disabled={submitting}
+                onClick={handleCreate}
+              >
+                Save Category
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Edit Category Modal */}
-      <Modal
-        isOpen={Boolean(editingCategory)}
-        onOpenChange={(open) => !open && setEditingCategory(null)}
-        className="dark bg-neutral-900 text-white border border-neutral-800"
-      >
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader className="text-lg font-bold border-b border-neutral-800">Rename Category</ModalHeader>
-              <ModalBody className="py-4">
-                <Input
-                  label="Category Name"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  variant="bordered"
-                />
-              </ModalBody>
-              <ModalFooter className="border-t border-neutral-800">
-                <Button variant="flat" onClick={() => setEditingCategory(null)} className="text-neutral-400">
-                  Cancel
-                </Button>
-                <Button className="bg-amber-500 text-black font-semibold" isLoading={submitting} onClick={handleUpdate}>
-                  Update
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      {editingCategory && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setEditingCategory(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl border border-neutral-800 bg-neutral-900 text-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-lg font-bold border-b border-neutral-800 p-4">Rename Category</div>
+            <div className="p-4">
+              <input
+                className="w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-white"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2 border-t border-neutral-800 p-4">
+              <button type="button" onClick={() => setEditingCategory(null)} className="text-neutral-400 px-3 py-2">
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="bg-amber-500 text-black font-semibold rounded-lg px-3 py-2 disabled:opacity-50"
+                disabled={submitting}
+                onClick={handleUpdate}
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

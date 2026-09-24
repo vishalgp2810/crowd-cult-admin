@@ -2,7 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { isAdminPublicPath } from "@/lib/adminPublicRoutes";
 import { getBearerToken, setBearerToken, clearBearerToken } from "./authToken";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3031";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

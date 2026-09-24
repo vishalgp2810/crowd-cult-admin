@@ -17,6 +17,7 @@ import {
   IconChevronRight,
   IconChevronLeft,
   IconCalendar,
+  IconImage,
 } from "./AdminIcons";
 import { cn } from "./cn";
 
@@ -38,6 +39,7 @@ function NavIcon({ href, isActive }: { href: string; isActive: boolean }) {
   if (href === "/admin/moderation") return <IconShield className={cls} />;
   if (href === "/admin/fees") return <IconChart className={cls} />;
   if (href === "/admin/events") return <IconCalendar className={cls} />;
+  if (href === "/admin/menu-library") return <IconImage className={cls} />;
   return <IconInbox className={cls} />;
 }
 

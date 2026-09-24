@@ -10,6 +10,8 @@ export const UPLOAD_KEYS = {
   EVENT_BANNER: "event-banner",
   EVENT_GALLERY: "event-gallery",
   EVENT_MEDIA: "event-media",
+  /** Crowd&Cult shared menu image library (platform admins only). */
+  MENU_IMAGE_LIBRARY: "menu-image-library",
 } as const;
 
 export type UploadKeyValue = (typeof UPLOAD_KEYS)[keyof typeof UPLOAD_KEYS];

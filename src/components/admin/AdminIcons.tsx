@@ -217,3 +217,13 @@ export function IconLink({ className, style }: IconProps) {
     </svg>
   );
 }
+
+export function IconImage({ className, style }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className} style={style} aria-hidden>
+      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+      <circle cx="8.5" cy="9.5" r="1.8" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="m21 16-5.2-5.2a1.5 1.5 0 0 0-2.1 0L5 19.5" />
+    </svg>
+  );
+}
