@@ -44,6 +44,12 @@ export const ADMIN_NAV: AdminNavItem[] = [
     match: (p) => p.startsWith("/admin/menu-library"),
   },
   {
+    href: "/admin/billing",
+    label: "Venue billing",
+    description: "GST / VAT bills, tax profiles and sales per venue",
+    match: (p) => p.startsWith("/admin/billing"),
+  },
+  {
     href: "/admin/menu",
     label: "Venue menus",
     description: "Support view for venue menu catalogs",
